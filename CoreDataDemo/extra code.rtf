@@ -1,0 +1,136 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1671\cocoasubrtf200
+{\fonttbl\f0\fnil\fcharset0 Menlo-Regular;\f1\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red255\green255\blue255;\red0\green128\blue0;
+\red0\green0\blue255;\red43\green131\blue159;\red163\green21\blue21;}
+{\*\expandedcolortbl;;\csgenericrgb\c0\c0\c0;\csgenericrgb\c100000\c100000\c100000;\csgenericrgb\c0\c50200\c0;
+\csgenericrgb\c0\c0\c100000;\csgenericrgb\c16900\c51200\c62500;\csgenericrgb\c63900\c8200\c8200;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\deftab543
+\pard\tx543\pardeftab543\pardirnatural\partightenfactor0
+
+\f0\fs22 \cf2 \cb3  \cf4 // MARK: - Core Data stack
+\f1\fs24 \cf0 \
+\
+
+\f0\fs22 \cf2     \cf5 lazy\cf2  \cf5 var\cf2  persistentContainer: \cf6 NSPersistentContainer\cf2  = \{
+\f1\fs24 \cf0 \
+
+\f0\fs22 \cf2         \cf4 /*
+\f1\fs24 \cf0 \
+
+\f0\fs22 \cf4          The persistent container for the application. This implementation
+\f1\fs24 \cf0 \
+
+\f0\fs22 \cf4          creates and returns a container, having loaded the store for the
+\f1\fs24 \cf0 \
+
+\f0\fs22 \cf4          application to it. This property is optional since there are legitimate
+\f1\fs24 \cf0 \
+
+\f0\fs22 \cf4          error conditions that could cause the creation of the store to fail.
+\f1\fs24 \cf0 \
+
+\f0\fs22 \cf4         */
+\f1\fs24 \cf0 \
+
+\f0\fs22 \cf2         \cf5 let\cf2  container = \cf6 NSPersistentContainer\cf2 (name: \cf7 "CoreDataDemo"\cf2 )
+\f1\fs24 \cf0 \
+
+\f0\fs22 \cf2         container.\cf6 loadPersistentStores\cf2 (completionHandler: \{ (storeDescription, error) \cf5 in
+\f1\fs24 \cf0 \
+
+\f0\fs22 \cf2             \cf5 if\cf2  \cf5 let\cf2  error = error \cf5 as\cf2  \cf6 NSError\cf2 ? \{
+\f1\fs24 \cf0 \
+
+\f0\fs22 \cf2                 \cf4 // Replace this implementation with code to handle the error appropriately.
+\f1\fs24 \cf0 \
+
+\f0\fs22 \cf2                 \cf4 // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+\f1\fs24 \cf0 \
+
+\f0\fs22 \cf2                  
+\f1\fs24 \cf0 \
+
+\f0\fs22 \cf2                 \cf4 /*
+\f1\fs24 \cf0 \
+
+\f0\fs22 \cf4                  Typical reasons for an error here include:
+\f1\fs24 \cf0 \
+
+\f0\fs22 \cf4                  * The parent directory does not exist, cannot be created, or disallows writing.
+\f1\fs24 \cf0 \
+
+\f0\fs22 \cf4                  * The persistent store is not accessible, due to permissions or data protection when the device is locked.
+\f1\fs24 \cf0 \
+
+\f0\fs22 \cf4                  * The device is out of space.
+\f1\fs24 \cf0 \
+
+\f0\fs22 \cf4                  * The store could not be migrated to the current model version.
+\f1\fs24 \cf0 \
+
+\f0\fs22 \cf4                  Check the error message to determine what the actual problem was.
+\f1\fs24 \cf0 \
+
+\f0\fs22 \cf4                  */
+\f1\fs24 \cf0 \
+
+\f0\fs22 \cf2                 \cf6 fatalError\cf2 (\cf7 "Unresolved error \cf2 \\\cf7 (\cf2 error\cf7 ), \cf2 \\\cf7 (\cf2 error.\cf6 userInfo\cf7 )"\cf2 )
+\f1\fs24 \cf0 \
+
+\f0\fs22 \cf2             \}
+\f1\fs24 \cf0 \
+
+\f0\fs22 \cf2         \})
+\f1\fs24 \cf0 \
+
+\f0\fs22 \cf2         \cf5 return\cf2  container
+\f1\fs24 \cf0 \
+
+\f0\fs22 \cf2     \}()
+\f1\fs24 \cf0 \
+\
+
+\f0\fs22 \cf2     \cf4 // MARK: - Core Data Saving support
+\f1\fs24 \cf0 \
+\
+
+\f0\fs22 \cf2     \cf5 func\cf2  saveContext () \{
+\f1\fs24 \cf0 \
+
+\f0\fs22 \cf2         \cf5 let\cf2  context = \cf6 persistentContainer\cf2 .\cf6 viewContext
+\f1\fs24 \cf0 \
+
+\f0\fs22 \cf2         \cf5 if\cf2  context.\cf6 hasChanges\cf2  \{
+\f1\fs24 \cf0 \
+
+\f0\fs22 \cf2             \cf5 do\cf2  \{
+\f1\fs24 \cf0 \
+
+\f0\fs22 \cf2                 \cf5 try\cf2  context.\cf6 save\cf2 ()
+\f1\fs24 \cf0 \
+
+\f0\fs22 \cf2             \} \cf5 catch\cf2  \{
+\f1\fs24 \cf0 \
+
+\f0\fs22 \cf2                 \cf4 // Replace this implementation with code to handle the error appropriately.
+\f1\fs24 \cf0 \
+
+\f0\fs22 \cf2                 \cf4 // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+\f1\fs24 \cf0 \
+
+\f0\fs22 \cf2                 \cf5 let\cf2  nserror = error \cf5 as\cf2  \cf6 NSError
+\f1\fs24 \cf0 \
+
+\f0\fs22 \cf2                 \cf6 fatalError\cf2 (\cf7 "Unresolved error \cf2 \\\cf7 (\cf2 nserror\cf7 ), \cf2 \\\cf7 (\cf2 nserror.\cf6 userInfo\cf7 )"\cf2 )
+\f1\fs24 \cf0 \
+
+\f0\fs22 \cf2             \}
+\f1\fs24 \cf0 \
+
+\f0\fs22 \cf2         \}
+\f1\fs24 \cf0 \
+
+\f0\fs22 \cf2     \}
+\f1\fs24 \cf0 \
+}
