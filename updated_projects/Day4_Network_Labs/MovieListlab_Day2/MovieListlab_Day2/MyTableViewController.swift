@@ -7,66 +7,130 @@
 //
 
 import UIKit
+import CoreData
+import Network
 
 class MyTableViewController: UITableViewController , AddMovieProtocol{
 
 
-     var movieArray:[Movie]!
+     var movieArray:[NSManagedObject]!
     
     var jsonArray:[Dictionary<String,Any>]!
     override func viewDidLoad() {
         
         super.viewDidLoad()
+        
         jsonArray = []
         movieArray = []
-        let url = URL(string : "https://api.androidhive.info/json/movies.json");
-        let request = URLRequest(url: url!)
-        let session = URLSession(configuration: URLSessionConfiguration.default)
-        /*
-         let url=URL(string: "https://api.androidhive.info/json/movies.json")
-         let request=URLRequest(url: url!)
-         let session=URLSession(configuration: URLSessionConfiguration.default)
- */
-        let task=session.dataTask(with: request) { (data, response, error) in
-            do{
-                self.jsonArray = try JSONSerialization.jsonObject(with: data!, options:.allowFragments)as!Array<Dictionary<String,Any>>
-               
-                for item in self.jsonArray!
-                {
-                    
-                    
-                    var movie = Movie()
-                    var numberYear = item["releaseYear"] as! NSNumber
-                    var intYear = numberYear.intValue
-                   var tiitle = (item["title"] as! String)
-                    
-                    movie.title = tiitle
-                    movie.image = (item["image"] as! String)
-                    movie.rating = (item["rating"]as! NSNumber).floatValue
-                    movie.genre = (item["genre"] as! [String])
-                    movie.releaseYear = (numberYear as! Int)
-                    self.movieArray!.append(movie)
-                    
-                    DispatchQueue.main.async {
-                        self.tableView.reloadData()
-                    }
-                    
-                    
-                }
-                print(self.jsonArray.count)
-             
-                
-            }
+        
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        let managerContext=appDelegate.persistentContainer.viewContext
+        
+        if #available(iOS 12.0, *) {
+            let monitor = NWPathMonitor()
             
-            catch
-            {
-                print("Error")
+            monitor.pathUpdateHandler = { path in
+                if path.status == .satisfied {
+                    print("We're connected!")
+                    let url = URL(string : "https://api.androidhive.info/json/movies.json");
+                    let request = URLRequest(url: url!)
+                    let session = URLSession(configuration: URLSessionConfiguration.default)
                 
+                    
+                    let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "MovieClass")
+                    do{
+                        self.movieArray = try managerContext.fetch(fetchRequest)
+                    }
+                    catch let error as NSError{
+                        print(error)
+                        
+                    }
+                    let entity = NSEntityDescription.entity(forEntityName: "MovieClass", in:managerContext)
+                    
+                    
+                    let task=session.dataTask(with: request) { (data, response, error) in
+                        do{
+                            self.jsonArray = try JSONSerialization.jsonObject(with: data!, options:.allowFragments)as!Array<Dictionary<String,Any>>
+                            
+                            for item in self.jsonArray!
+                            {
+                                
+                                
+                                //var movie = Movie()
+                                let movie = NSManagedObject(entity: entity!, insertInto: managerContext)
+                                var numberYear = item["releaseYear"] as! NSNumber
+                                
+                                movie.setValue((item["rating"]as! NSNumber).floatValue, forKey: "rate")
+                                movie.setValue((numberYear as! Int), forKey: "releasedyear")
+                                movie.setValue((item["image"] as! String), forKey: "image")
+                                movie.setValue((item["title"] as! String), forKey: "title")
+                                movie.setValue((item["genre"] as! [String]).description, forKey: "genre")
+                                
+                                self.movieArray!.append(movie)
+                                
+                                DispatchQueue.main.async {
+                                    self.tableView.reloadData()
+                                }
+                                
+                                
+                            }
+                            print(self.jsonArray.count)
+                            
+                            
+                        }
+                            
+                        catch
+                        {
+                            print("Error")
+                            
+                        }
+                        }.resume()
+                } else {
+                    print("No connection.")
+                    
+                
+                    let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "MovieClass")
+                    do{
+                        self.movieArray = try managerContext.fetch(fetchRequest)
+                    }
+                    catch let error as NSError{
+                        print(error)
+                        
+                    }
+                }
+               
+                
+                print(path.isExpensive)
             }
-            }.resume()
+            let queue = DispatchQueue(label: "Monitor")
+            monitor.start(queue: queue)
+        } else {
+           
+        }
+        
+       
     }
     func addNewMovie(newMovie: Movie) {
-        movieArray?.append(newMovie)
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        let managerContext=appDelegate.persistentContainer.viewContext
+        let entity = NSEntityDescription.entity(forEntityName: "MovieClass", in: managerContext)
+        let movie = NSManagedObject(entity: entity!, insertInto: managerContext)
+        
+        movie.setValue(newMovie.rating, forKey: "rate")
+        movie.setValue(newMovie.releaseYear, forKey: "releasedyear")
+        movie.setValue(newMovie.image, forKey: "image")
+        movie.setValue(newMovie.title, forKey: "title")
+        movie.setValue(newMovie.genre?.description, forKey: "genre")
+        
+        
+        do{
+            try managerContext.save()
+            movieArray.append(movie)
+        }
+        catch let error as NSError
+        {
+            print(error.localizedDescription)
+        }
         self.tableView.reloadData()
     }
     
@@ -92,7 +156,7 @@ class MyTableViewController: UITableViewController , AddMovieProtocol{
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-        cell.textLabel?.text=movieArray[indexPath.row].title
+        cell.textLabel?.text=movieArray[indexPath.row].value(forKey: "title") as! String
 
         return cell
     }

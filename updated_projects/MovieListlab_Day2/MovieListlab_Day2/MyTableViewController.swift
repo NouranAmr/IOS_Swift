@@ -20,7 +20,7 @@ class MyTableViewController: UITableViewController , AddMovieProtocol{
         let managerContext=appDelegate.persistentContainer.viewContext
         let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "MovieClass")
         do{
-            movieArray = try managerContext.fetch(fetchRequest)
+            movieArray=try managerContext.fetch(fetchRequest)
         }
         catch let error as NSError{
             print(error)

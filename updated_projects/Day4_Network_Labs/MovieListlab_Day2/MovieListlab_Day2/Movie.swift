@@ -13,7 +13,7 @@ class Movie {
     var image : String!
     var rating : Float!
     var releaseYear : Int!
-    var genre :[String!]
+    var genre :[String]?
     init() {
         title=""
         image=""
