@@ -7,7 +7,7 @@
 //
 
 import UIKit
-
+import CoreData
 class ViewController: UIViewController {
     
     @IBOutlet weak var genreLbl: UILabel!
@@ -15,20 +15,24 @@ class ViewController: UIViewController {
     @IBOutlet weak var ratingLbl: UILabel!
     @IBOutlet weak var releaseYearLbl: UILabel!
     @IBOutlet weak var titleLbl: UILabel!
-    var movieObj1 = Movie()
+    var movieObj1 = NSManagedObject()
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        let managerContext=appDelegate.persistentContainer.viewContext
+        let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "MovieClass")
         
-        titleLbl.text=movieObj1.title
-        ratingLbl.text=String(movieObj1.rating)
-        releaseYearLbl.text=String(movieObj1.releaseYear)
-        genreLbl.text=""
-        for g in 0..<(movieObj1.genre?.count)!{
-            genreLbl.text?.append((movieObj1.genre?[g])!);
-            genreLbl.text?.append(" , ");
-        }
-        myImageView.image=UIImage(named: (movieObj1.image)!)
+        
+        
+        titleLbl.text=movieObj1.value(forKey: "title") as! String
+        ratingLbl.text=movieObj1.value(forKey: "rate") as! String
+        releaseYearLbl.text=movieObj1.value(forKey: "releasedyear") as! String
+        genreLbl.text=movieObj1.value(forKey: "genre") as! String
+        
+        var imageStr = movieObj1.value(forKey: "image") as! String
+        myImageView.image=UIImage(named: imageStr)
+ 
     }
     
     override func didReceiveMemoryWarning() {

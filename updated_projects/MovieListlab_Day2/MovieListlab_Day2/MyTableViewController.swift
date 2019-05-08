@@ -7,14 +7,17 @@
 //
 
 import UIKit
+import CoreData
 
 class MyTableViewController: UITableViewController , AddMovieProtocol{
 
 
-     var movieArray :Array<Movie>?
+    var movieArray = Array <NSManagedObject>()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+       
+        /*
         let obj1=Movie()
         obj1.title="Dawn of the Planet of the Apes"
         obj1.image="1.jpg"
@@ -51,9 +54,30 @@ class MyTableViewController: UITableViewController , AddMovieProtocol{
         obj5.genre=["Drama", "Thriller"]
         
         movieArray = [obj1,obj2,obj3,obj4,obj5]
+ */
+        
     }
     func addNewMovie(newMovie: Movie) {
-        movieArray?.append(newMovie)
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        let managerContext=appDelegate.persistentContainer.viewContext
+        let entity = NSEntityDescription.entity(forEntityName: "MovieClass", in: managerContext)
+        let movie = NSManagedObject(entity: entity!, insertInto: managerContext)
+        
+        movie.setValue(newMovie.rating, forKey: "rate")
+        movie.setValue(newMovie.releaseYear, forKey: "releasedyear")
+        movie.setValue(newMovie.image, forKey: "image")
+        movie.setValue(newMovie.title, forKey: "title")
+        movie.setValue(newMovie.genre?.description, forKey: "genre")
+        
+        
+        do{
+            try managerContext.save()
+            movieArray.append(movie)
+        }
+        catch let error as NSError
+        {
+            print(error.localizedDescription)
+        }
         self.tableView.reloadData()
     }
     
@@ -72,14 +96,14 @@ class MyTableViewController: UITableViewController , AddMovieProtocol{
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return movieArray!.count
+        return movieArray.count
     }
 
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-        cell.textLabel?.text=movieArray![ indexPath.row].title
+        cell.textLabel?.text=movieArray[indexPath.row].value(forKey: "title") as! String
 
         return cell
     }
@@ -89,7 +113,7 @@ class MyTableViewController: UITableViewController , AddMovieProtocol{
         if viewType == "showMovie"
         {
         let movieVC = segue.destination as! ViewController
-        movieVC.movieObj1 = movieArray![(self.tableView.indexPathForSelectedRow?.row)!]
+        movieVC.movieObj1 = movieArray[(self.tableView.indexPathForSelectedRow?.row)!]
         }
         else if viewType == "addMovie"
         {
