@@ -26,8 +26,8 @@ class ViewController: UIViewController {
         
         
         titleLbl.text=movieObj1.value(forKey: "title") as! String
-        ratingLbl.text=movieObj1.value(forKey: "rate") as! String
-        releaseYearLbl.text=movieObj1.value(forKey: "releasedyear") as! String
+        ratingLbl.text=String (movieObj1.value(forKey: "rate") as! Float)
+        releaseYearLbl.text=String(movieObj1.value(forKey: "releasedyear") as! Int)
         genreLbl.text=movieObj1.value(forKey: "genre") as! String
         
         var imageStr = movieObj1.value(forKey: "image") as! String

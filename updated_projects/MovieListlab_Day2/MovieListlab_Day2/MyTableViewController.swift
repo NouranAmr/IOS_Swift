@@ -16,45 +16,16 @@ class MyTableViewController: UITableViewController , AddMovieProtocol{
     
     override func viewDidLoad() {
         super.viewDidLoad()
-       
-        /*
-        let obj1=Movie()
-        obj1.title="Dawn of the Planet of the Apes"
-        obj1.image="1.jpg"
-        obj1.rating=8.3
-        obj1.releaseYear=2014
-        obj1.genre=["Action", "Drama", "Sci-Fi"]
-        
-        let obj2=Movie()
-        obj2.title="District 9"
-        obj2.image="2.jpg"
-        obj2.rating=8
-        obj2.releaseYear=2009
-        obj2.genre=["Action", "Sci-Fi", "Thriller"]
-        
-        let obj3=Movie()
-        obj3.title="Transformers: Age of Extinction"
-        obj3.image="3.jpg"
-        obj3.rating=6.3
-        obj3.releaseYear=2014
-        obj3.genre=["Action", "Adventure", "Sci-Fi"]
-        
-        let obj4=Movie()
-        obj4.title="X-Men: Days of Future Past"
-        obj4.image="4.jpg"
-        obj4.rating=8.4
-        obj4.releaseYear=2014
-        obj4.genre=["Action", "Sci-Fi", "Thriller"]
-        
-        let obj5=Movie()
-        obj5.title="The Machinist"
-        obj5.image="5.jpg"
-        obj5.rating=7.8
-        obj5.releaseYear=2004
-        obj5.genre=["Drama", "Thriller"]
-        
-        movieArray = [obj1,obj2,obj3,obj4,obj5]
- */
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        let managerContext=appDelegate.persistentContainer.viewContext
+        let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "MovieClass")
+        do{
+            movieArray = try managerContext.fetch(fetchRequest)
+        }
+        catch let error as NSError{
+            print(error)
+            
+        }
         
     }
     func addNewMovie(newMovie: Movie) {
